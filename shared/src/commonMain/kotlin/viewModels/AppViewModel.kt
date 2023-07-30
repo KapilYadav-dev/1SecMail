@@ -128,3 +128,12 @@ sealed class UiState {
     data class Success(val data: Any) : UiState()
     data class Error(val message: String) : UiState()
 }
+
+fun getFakeMailList() = listOf<EmailBody>(
+    EmailBody("","infokaydev@gmail.vom",1,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",2,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",3,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",4,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",5,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",6,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+)
