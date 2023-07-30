@@ -2,6 +2,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
+import javax.swing.JOptionPane
 
 actual val appFont: FontFamily
     get() = FontFamily(
@@ -14,10 +17,13 @@ actual val appFont: FontFamily
 
 actual object Clipboard {
     actual fun copyTextToClipboard(text: String) {
-        TODO("Not yet implemented")
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val stringSelection = StringSelection(text)
+        clipboard.setContents(stringSelection, null)
     }
 }
 
 @Composable
 actual fun showToast(msg: String) {
+        JOptionPane.showMessageDialog(null, msg)
 }

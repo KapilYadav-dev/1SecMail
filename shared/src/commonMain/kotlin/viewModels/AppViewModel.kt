@@ -38,7 +38,7 @@ class AppViewModel : ViewModel() {
     }
 
     private fun fetchMail() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 _uiState.emit(UiState.Loading)
                 getNewMail().getOrNull(0)?.let {
@@ -103,7 +103,7 @@ class AppViewModel : ViewModel() {
 
     fun generateNewMail() {
         clearEmailList()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getNewMail().getOrNull(0)?.let {
                 email.value = it
             } ?: kotlin.run {
@@ -123,7 +123,7 @@ class AppViewModel : ViewModel() {
     }
 
     fun openMail(id: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val response = getMailContent(id)
             Logger(response.toString())
         }

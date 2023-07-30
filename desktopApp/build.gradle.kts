@@ -13,6 +13,10 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":shared"))
             }
+            configurations.all {
+                // some dependencies contains it, this causes an exception to initialize the Main dispatcher in desktop for image loader
+                exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
+            }
         }
     }
 }
