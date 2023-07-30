@@ -1,8 +1,16 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 
 actual val appFont: FontFamily
-    get() = TODO("Not yet implemented")
+    get() = FontFamily(
+        androidx.compose.ui.text.platform.Font(
+            "fonts/font.ttf",
+            FontWeight.SemiBold,
+            FontStyle.Normal
+        )
+    )
 
 actual object Clipboard {
     actual fun copyTextToClipboard(text: String) {

@@ -12,6 +12,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import model.EmailBody
+import model.EmailMessage
 import networking.BASE_URL
 import networking.httpClient
 import utils.Utils.Logger
@@ -121,6 +122,28 @@ class AppViewModel : ViewModel() {
         Clipboard.copyTextToClipboard(email)
     }
 
+    fun openMail(id: Int) {
+        viewModelScope.launch {
+            val response = getMailContent(id)
+            Logger(response.toString())
+        }
+    }
+
+    private suspend fun getMailContent(id:Int): EmailMessage {
+        val response = httpClient.get {
+            url {
+                takeFrom(BASE_URL)
+                parameters.append("action", "readMessage")
+                parameters.append("login", email.value.getNameFromEmail())
+                parameters.append("domain", email.value.getDomainFromEmail())
+                parameters.append("id", id.toString())
+            }
+        }
+        Logger("Email Content is ${response.body<EmailMessage>()}")
+        return response.body()
+    }
+
+
 }
 
 sealed class UiState {
@@ -129,7 +152,7 @@ sealed class UiState {
     data class Error(val message: String) : UiState()
 }
 
-fun getFakeMailList() = listOf<EmailBody>(
+fun getFakeMailList() = listOf(
     EmailBody("","infokaydev@gmail.vom",1,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
     EmailBody("","infokaydev@gmail.vom",2,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
     EmailBody("","infokaydev@gmail.vom",3,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),

@@ -127,7 +127,9 @@ fun HomeScreen() {
                     itemsIndexed(
                         items = viewModel.emailList,
                         key = { _, item -> item.id }) { idx, item ->
-                        MailView(item, idx)
+                        MailView(item, idx) {
+                            viewModel.openMail(it.id)
+                        }
                     }
                 }
             }

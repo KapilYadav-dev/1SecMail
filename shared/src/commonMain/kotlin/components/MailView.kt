@@ -25,19 +25,26 @@ import res.whiteColor
 
 @ExperimentalResourceApi
 @Composable
-fun MailView(item: EmailBody, idx: Int) {
+fun MailView(item: EmailBody, idx: Int, onClick: (EmailBody) -> Unit) {
 
     Row(
         modifier = Modifier
             .clickable(onClick = {})
             .padding(start = 8.dp, end = 16.dp, bottom = 24.dp)
             .fillMaxWidth()
+            .clickable {
+                onClick(item)
+            }
     ) {
         Box(
             modifier = Modifier
                 .padding(end = 16.dp)
         ) {
-            CircularViewWithInitials(item.from, backgroundColor = blueColor, initialsColor = whiteColor)
+            CircularViewWithInitials(
+                item.from,
+                backgroundColor = blueColor,
+                initialsColor = whiteColor
+            )
         }
 
         Column(modifier = Modifier.weight(1f)) {
@@ -46,7 +53,7 @@ fun MailView(item: EmailBody, idx: Int) {
                 fontSize = 18.sp,
                 fontFamily = appFont
             )
-            Spacer(modifier =Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = item.subject,
                 fontSize = 14.sp,
@@ -55,13 +62,13 @@ fun MailView(item: EmailBody, idx: Int) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier =Modifier.height(1.dp))
+            Spacer(modifier = Modifier.height(1.dp))
         }
     }
 }
 
 @Composable
-fun CircularViewWithInitials(name: String,backgroundColor:Color,initialsColor:Color) {
+fun CircularViewWithInitials(name: String, backgroundColor: Color, initialsColor: Color) {
     Box(
         modifier = Modifier
             .size(48.dp)
@@ -71,7 +78,12 @@ fun CircularViewWithInitials(name: String,backgroundColor:Color,initialsColor:Co
     ) {
         Text(
             text = name.take(2).lowercase(),
-            style = TextStyle(color = initialsColor, fontFamily = appFont, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+            style = TextStyle(
+                color = initialsColor,
+                fontFamily = appFont,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            ),
             textAlign = TextAlign.Center
         )
     }
