@@ -10,8 +10,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -43,6 +43,12 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
         val navigator = LocalNavigator.current
         val scrollState = rememberScrollState()
         val scope = rememberCoroutineScope()
+        var showToast by rememberSaveable{ mutableStateOf("") }
+
+        if(showToast.isNotEmpty()) {
+            showToast(showToast)
+            showToast=""
+        }
 
         Column(
             Modifier.background(whiteColor).padding(8.dp).fillMaxSize().verticalScroll(scrollState)
@@ -76,6 +82,7 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
                                     println(isSuccess)
                                 }
                             }
+                            showToast="Downloading finished"
                         },
                         contentDescription = "download"
                     )
