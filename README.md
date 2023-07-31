@@ -1,4 +1,4 @@
-# 1Sec Temporary Mail App
+# 1Sec Temporary Mail App ( Made with Compose Multiplatform )
 
 1Sec Temporary Mail is a Kotlin multiplatform app that provides users with temporary email addresses that last for one second. With this app, users can quickly generate disposable email addresses and use them for various purposes such as signing up for websites, receiving verification emails, or protecting their primary email from spam.
 
