@@ -22,3 +22,7 @@ actual object Clipboard {
 actual fun showToast(msg: String) {
     Toast.makeText(LocalContext.current,msg,Toast.LENGTH_LONG).show()
 }
+
+actual object Platform {
+    actual val platformName: String = "android"
+}

@@ -29,3 +29,7 @@ fun loadFont(res:String): Font {
     }
     return androidx.compose.ui.text.platform.Font(res, byteArray,FontWeight.SemiBold, FontStyle.Normal)
 }
+
+actual object Platform {
+    actual val platformName: String = "ios"
+}

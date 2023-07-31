@@ -27,3 +27,7 @@ actual object Clipboard {
 actual fun showToast(msg: String) {
         JOptionPane.showMessageDialog(null, msg)
 }
+
+actual object Platform {
+    actual val platformName: String = "desktop"
+}

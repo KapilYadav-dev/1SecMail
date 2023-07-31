@@ -102,7 +102,6 @@ class AppViewModel : ViewModel() {
     }
 
     fun generateNewMail() {
-        clearEmailList()
         viewModelScope.launch(Dispatchers.IO) {
             getNewMail().getOrNull(0)?.let {
                 email.value = it
@@ -110,12 +109,6 @@ class AppViewModel : ViewModel() {
                 TODO("SET A PROMPT TO SHOW email can't be fetch")
             }
         }
-    }
-
-    private fun clearEmailList() {
-        if (job != null && job!!.isActive) job?.cancel()
-        emailList.clear()
-        Logger("Clear ho jana chiye tha")
     }
 
     fun copyMail(email: String) {
@@ -159,4 +152,8 @@ fun getFakeMailList() = listOf(
     EmailBody("","infokaydev@gmail.vom",4,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
     EmailBody("","infokaydev@gmail.vom",5,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
     EmailBody("","infokaydev@gmail.vom",6,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",7,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",8,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",9,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody("","infokaydev@gmail.vom",10,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
 )

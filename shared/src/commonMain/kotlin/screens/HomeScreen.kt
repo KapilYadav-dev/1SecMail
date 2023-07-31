@@ -1,5 +1,6 @@
 package screens
 
+import Platform
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,9 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import appFont
@@ -47,6 +45,8 @@ fun HomeScreen() {
     var showToast by rememberSaveable{ mutableStateOf("") }
     val clipboardManager = LocalClipboardManager.current
 
+    val topPadding = if(Platform.platformName == "android") 0.dp else 16.dp
+
     if(showToast.isNotEmpty()) {
         showToast(showToast)
         showToast=""
@@ -71,7 +71,7 @@ fun HomeScreen() {
         }
         is UiState.Success -> {
             Column(modifier = Modifier.fillMaxSize().background(whiteColor)) {
-                Row(modifier = Modifier.padding(start = 16.dp)) {
+                Row(modifier = Modifier.padding(start = 16.dp, top = topPadding)) {
                     Text("TEMPER", fontFamily = appFont, fontSize = 24.sp, color = blueColor)
                     Text("MAIL", fontFamily = appFont, fontSize = 24.sp, color = blackColor)
                 }
@@ -90,7 +90,7 @@ fun HomeScreen() {
                 /*
                  * This is the email box
                  */
-                EmailBox(email = { viewModel.email.value })
+                EmailBox(email = { viewModel.email.value },emailCount={ viewModel.emailList.size })
                 /*
                  * These are the copy and new mail buttons
                  */
@@ -120,15 +120,40 @@ fun HomeScreen() {
                 /*
                  *
                  */
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 24.dp)
-                ) {
-                    itemsIndexed(
-                        items = viewModel.emailList,
-                        key = { _, item -> item.id }) { idx, item ->
-                        MailView(item, idx) {
-                            viewModel.openMail(it.id)
+                if(viewModel.emailList.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+                    ) {
+                        itemsIndexed(
+                            items = viewModel.emailList,
+                            key = { _, item -> item.id }) { idx, item ->
+                            MailView(item, idx) {
+                                viewModel.openMail(it.id)
+                            }
+                        }
+                    }
+                } else {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(40.dp),
+                                color = blueColor.copy(alpha = 1f)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                "fetching mail",
+                                fontFamily = appFont,
+                                fontSize = 18.sp,
+                                color = blueColor.copy(alpha = 1f)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                "new mail will automatically appear here",
+                                fontFamily = appFont,
+                                fontSize = 14.sp,
+                                color = blueColor.copy(alpha = 0.3f)
+                            )
                         }
                     }
                 }
