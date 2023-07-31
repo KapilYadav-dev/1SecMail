@@ -103,6 +103,22 @@ class AppViewModel : ScreenModel {
         return response.body()
     }
 
+
+    fun downloadAttachment(id: Int,file:String) {
+        coroutineScope.launch {
+            httpClient.get {
+                url {
+                    takeFrom(BASE_URL)
+                    parameters.append("action", "readMessage")
+                    parameters.append("login", email.value.getNameFromEmail())
+                    parameters.append("domain", email.value.getDomainFromEmail())
+                    parameters.append("id", id.toString())
+                    parameters.append("file", file)
+                }
+            }
+        }
+    }
+
     fun generateNewMail() {
         coroutineScope.launch(Dispatchers.IO) {
             getNewMail().getOrNull(0)?.let {
