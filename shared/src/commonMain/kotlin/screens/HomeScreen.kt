@@ -22,12 +22,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import appFont
+import cafe.adriel.voyager.core.model.rememberScreenModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import components.CtaIconButton
 import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlinx.coroutines.launch
+import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import res.blackColor
@@ -40,146 +45,161 @@ import viewModels.UiState
 
 
 @ExperimentalResourceApi
-@Composable
-fun HomeScreen() {
-    val viewModel = getViewModel(Unit, viewModelFactory { AppViewModel() })
-    val uiState by viewModel.uiState.collectAsState()
-    var showToast by rememberSaveable{ mutableStateOf("") }
-    val clipboardManager = LocalClipboardManager.current
+class HomeScreen:Screen {
+    @Composable
+    override fun Content() {
+        val scope = rememberCoroutineScope()
+        val navigator = LocalNavigator.current
+        val viewModel = rememberScreenModel { AppViewModel() }
+        val uiState by viewModel.uiState.collectAsState()
+        var showToast by rememberSaveable{ mutableStateOf("") }
+        val clipboardManager = LocalClipboardManager.current
 
-    val topPadding = if(Platform.platformName == "android") 0.dp else 16.dp
+        val topPadding = if(Platform.platformName == "android") 0.dp else 16.dp
 
-    if(showToast.isNotEmpty()) {
-        showToast(showToast)
-        showToast=""
-    }
-    when (uiState) {
-        UiState.Loading -> {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(64.dp),
-                        color = blueColor.copy(alpha = 0.3f)
-                    )
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Text(
-                        "stealing mail for you ☠",
-                        fontFamily = appFont,
-                        fontSize = 18.sp,
-                        color = blueColor.copy(alpha = 0.3f)
-                    )
+        if(showToast.isNotEmpty()) {
+            showToast(showToast)
+            showToast=""
+        }
+        when (uiState) {
+            UiState.Loading -> {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(64.dp),
+                            color = blueColor.copy(alpha = 0.3f)
+                        )
+                        Spacer(modifier = Modifier.height(50.dp))
+                        Text(
+                            "stealing mail for you ☠",
+                            fontFamily = appFont,
+                            fontSize = 18.sp,
+                            color = blueColor.copy(alpha = 0.3f)
+                        )
+                    }
                 }
             }
-        }
-        is UiState.Success -> {
-            Column(modifier = Modifier.fillMaxSize().background(whiteColor)) {
-                Row(modifier = Modifier.padding(start = 16.dp, top = topPadding)) {
-                    Text("TEMPER", fontFamily = appFont, fontSize = 24.sp, color = blueColor)
-                    Text("MAIL", fontFamily = appFont, fontSize = 24.sp, color = blackColor)
-                }
-                Divider(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-                )
-                AnimatedVisibility(viewModel.emailList.isEmpty()) {
-                    Image(
-                        painterResource("img-before.xml"),
-                        modifier = Modifier.fillMaxWidth().height(160.dp),
-                        contentScale = ContentScale.Fit,
-                        contentDescription = null
-                    )
-                }
-                AnimatedVisibility(viewModel.emailList.isNotEmpty()) {
-                    Image(
-                        painterResource("img-after.xml"),
-                        modifier = Modifier.fillMaxWidth().height(160.dp),
-                        contentScale = ContentScale.Fit,
-                        contentDescription = null
-                    )
-                }
-                /*
-                 * This is the email box
-                 */
-                EmailBox(email = { viewModel.email.value },emailCount={ viewModel.emailList.size })
-                /*
-                 * These are the copy and new mail buttons
-                 */
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    CtaIconButton(
-                        "New Mail",
-                        CtaIconButtonActions.RegenerateMail,
-                        Modifier.weight(1f).padding(start = 16.dp)
-                    ) {
-                        viewModel.generateNewMail()
-                        showToast="generating new mail"
+            is UiState.Success -> {
+                Column(modifier = Modifier.fillMaxSize().background(whiteColor)) {
+                    Row(modifier = Modifier.padding(start = 16.dp, top = topPadding)) {
+                        Text("TEMPER", fontFamily = appFont, fontSize = 24.sp, color = blueColor)
+                        Text("MAIL", fontFamily = appFont, fontSize = 24.sp, color = blackColor)
                     }
-                    Spacer(modifier = Modifier.weight(0.1f))
-                    CtaIconButton(
-                        "Copy Mail",
-                        CtaIconButtonActions.CopyMail,
-                        Modifier.weight(1f).padding(end = 16.dp)
-                    ) {
-                        viewModel.copyMail(viewModel.email.value)
-                        clipboardManager.setText(AnnotatedString(viewModel.email.value))
-                        showToast="copied to clipboard"
-                    }
-                }
-                /*
-                 * this is our mail box area where mails will appear
-                 */
-                if(viewModel.emailList.isNotEmpty()) {
-                    LazyColumn(
+                    Divider(
                         modifier = Modifier.fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+                    )
+                    AnimatedVisibility(viewModel.emailList.isEmpty()) {
+                        Image(
+                            painterResource("img-before.xml"),
+                            modifier = Modifier.fillMaxWidth().height(160.dp),
+                            contentScale = ContentScale.Fit,
+                            contentDescription = null
+                        )
+                    }
+                    AnimatedVisibility(viewModel.emailList.isNotEmpty()) {
+                        Image(
+                            painterResource("img-after.xml"),
+                            modifier = Modifier.fillMaxWidth().height(160.dp),
+                            contentScale = ContentScale.Fit,
+                            contentDescription = null
+                        )
+                    }
+                    /*
+                     * This is the email box
+                     */
+                    EmailBox(email = { viewModel.email.value },emailCount={ viewModel.emailList.size })
+                    /*
+                     * These are the copy and new mail buttons
+                     */
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        itemsIndexed(
-                            items = viewModel.emailList,
-                            key = { _, item -> item.id }) { idx, item ->
-                            MailView(item, idx) {
-                                viewModel.openMail(it.id)
+                        CtaIconButton(
+                            "New Mail",
+                            CtaIconButtonActions.RegenerateMail,
+                            Modifier.weight(1f).padding(start = 16.dp)
+                        ) {
+                            viewModel.generateNewMail()
+                            showToast="generating new mail"
+                        }
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        CtaIconButton(
+                            "Copy Mail",
+                            CtaIconButtonActions.CopyMail,
+                            Modifier.weight(1f).padding(end = 16.dp)
+                        ) {
+                            viewModel.copyMail(viewModel.email.value)
+                            clipboardManager.setText(AnnotatedString(viewModel.email.value))
+                            showToast="copied to clipboard"
+                        }
+                    }
+                    /*
+                     * this is our mail box area where mails will appear
+                     */
+                    if(viewModel.emailList.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+                        ) {
+                            itemsIndexed(
+                                items = viewModel.emailList,
+                                key = { _, item -> item.id }) { idx, item ->
+                                MailView(item, idx) {
+                                    scope.launch {
+                                        println("Cache is ${viewModel.cache}")
+                                        if(viewModel.cache.containsKey(it.id)) {
+                                            val data = viewModel.cache[it.id]
+                                            navigator?.push(EmailBodyScreen(data?: EmailMessage()))
+                                        } else {
+                                            val data = viewModel.openMail(it.id)
+                                            viewModel.cache[it.id] = data
+                                            navigator?.push(EmailBodyScreen(data))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        /*
+                         * If there is no mail then we'll show fetching status
+                         */
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(40.dp),
+                                    color = blueColor.copy(alpha = 1f)
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Text(
+                                    "fetching mail",
+                                    fontFamily = appFont,
+                                    fontSize = 18.sp,
+                                    color = blueColor.copy(alpha = 1f)
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Text(
+                                    "new messages will be automatically displayed here",
+                                    fontFamily = appFont,
+                                    fontSize = 14.sp,
+                                    color = blueColor.copy(alpha = 0.3f),
+                                    modifier = Modifier.padding(horizontal = 24.dp),
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     }
-                } else {
-                    /*
-                     * If there is no mail then we'll show fetching status
-                     */
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(40.dp),
-                                color = blueColor.copy(alpha = 1f)
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                "fetching mail",
-                                fontFamily = appFont,
-                                fontSize = 18.sp,
-                                color = blueColor.copy(alpha = 1f)
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                "new messages will be automatically displayed here",
-                                fontFamily = appFont,
-                                fontSize = 14.sp,
-                                color = blueColor.copy(alpha = 0.3f),
-                                modifier = Modifier.padding(horizontal = 24.dp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
                 }
             }
+            is UiState.Error -> {
+                val message = (uiState as UiState.Error).message
+                Utils.Logger(message)
+            }
         }
-        is UiState.Error -> {
-            val message = (uiState as UiState.Error).message
-            Utils.Logger(message)
-        }
+
     }
 
 }
