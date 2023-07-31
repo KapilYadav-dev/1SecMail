@@ -1,6 +1,7 @@
 package screens
 
 import Platform
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import appFont
@@ -81,12 +83,22 @@ fun HomeScreen() {
                     thickness = 1.dp,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
                 )
-                Image(
-                    painterResource("compose-multiplatform.xml"),
-                    modifier = Modifier.fillMaxWidth().height(160.dp),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null
-                )
+                AnimatedVisibility(viewModel.emailList.isEmpty()) {
+                    Image(
+                        painterResource("img-before.xml"),
+                        modifier = Modifier.fillMaxWidth().height(160.dp),
+                        contentScale = ContentScale.Fit,
+                        contentDescription = null
+                    )
+                }
+                AnimatedVisibility(viewModel.emailList.isNotEmpty()) {
+                    Image(
+                        painterResource("img-after.xml"),
+                        modifier = Modifier.fillMaxWidth().height(160.dp),
+                        contentScale = ContentScale.Fit,
+                        contentDescription = null
+                    )
+                }
                 /*
                  * This is the email box
                  */
@@ -118,7 +130,7 @@ fun HomeScreen() {
                     }
                 }
                 /*
-                 *
+                 * this is our mail box area where mails will appear
                  */
                 if(viewModel.emailList.isNotEmpty()) {
                     LazyColumn(
@@ -134,6 +146,9 @@ fun HomeScreen() {
                         }
                     }
                 } else {
+                    /*
+                     * If there is no mail then we'll show fetching status
+                     */
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(
@@ -149,10 +164,12 @@ fun HomeScreen() {
                             )
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
-                                "new mail will automatically appear here",
+                                "new messages will be automatically displayed here",
                                 fontFamily = appFont,
                                 fontSize = 14.sp,
-                                color = blueColor.copy(alpha = 0.3f)
+                                color = blueColor.copy(alpha = 0.3f),
+                                modifier = Modifier.padding(horizontal = 24.dp),
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
