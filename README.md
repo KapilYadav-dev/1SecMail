@@ -63,7 +63,3 @@ We welcome contributions to improve the app. If you want to contribute, please f
 
 The 1Sec Temporary Mail app is licensed under the MIT License. You can find the details in the [LICENSE](./LICENSE) file.
 
----
-
-This README provides an overview of the 1Sec Temporary Mail app, its tech stack, project structure, and the libraries used. It also includes instructions on how to build and run the app and guidelines for contributing to the project. Feel free to modify and expand this README as needed to suit your project's specific requirements.
-
