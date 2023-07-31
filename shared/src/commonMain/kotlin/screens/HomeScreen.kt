@@ -29,8 +29,6 @@ import components.CtaIconButton
 import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
-import dev.icerock.moko.mvvm.compose.getViewModel
-import dev.icerock.moko.mvvm.compose.viewModelFactory
 import kotlinx.coroutines.launch
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
