@@ -16,3 +16,7 @@ expect fun showToast(msg:String)
 expect object Platform {
     val platformName: String
 }
+
+expect class FileDownloader() {
+    suspend fun downloadFile(url: String, destination: String): Boolean
+}
