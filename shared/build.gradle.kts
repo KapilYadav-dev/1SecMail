@@ -30,6 +30,7 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "2.3.2"
+        val voyagerVersion = "1.0.0-rc05"
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -43,9 +44,9 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-                api("dev.icerock.moko:mvvm-core:0.16.1")
-                api("dev.icerock.moko:mvvm-compose:0.16.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                api("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+                api("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
             }
         }
         val androidMain by getting {

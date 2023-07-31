@@ -1,7 +1,10 @@
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import javax.swing.JOptionPane
@@ -25,7 +28,7 @@ actual object Clipboard {
 
 @Composable
 actual fun showToast(msg: String) {
-        JOptionPane.showMessageDialog(null, msg)
+    JOptionPane.showMessageDialog(null, msg)
 }
 
 actual object Platform {

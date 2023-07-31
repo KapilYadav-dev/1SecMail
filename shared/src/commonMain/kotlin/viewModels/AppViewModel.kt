@@ -4,7 +4,8 @@ import Clipboard
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.coroutineScope
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -19,26 +20,27 @@ import utils.Utils.Logger
 import utils.Utils.getDomainFromEmail
 import utils.Utils.getNameFromEmail
 
-class AppViewModel : ViewModel() {
+class AppViewModel : ScreenModel {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> get() = _uiState
     var email = mutableStateOf("")
     var emailList by mutableStateOf(mutableListOf<EmailBody>())
+    val cache by mutableStateOf(mutableMapOf<Int,EmailMessage>())
     private var job: Job? = null
 
     init {
         fetchMail()
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    override fun onDispose() {
+        super.onDispose()
         httpClient.close()
         if (job != null && job?.isActive == true) job?.cancel()
     }
 
     private fun fetchMail() {
-        viewModelScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.IO) {
             try {
                 _uiState.emit(UiState.Loading)
                 getNewMail().getOrNull(0)?.let {
@@ -102,9 +104,10 @@ class AppViewModel : ViewModel() {
     }
 
     fun generateNewMail() {
-        viewModelScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.IO) {
             getNewMail().getOrNull(0)?.let {
                 email.value = it
+                emailList= mutableListOf()
             } ?: kotlin.run {
                 TODO("SET A PROMPT TO SHOW email can't be fetch")
             }
@@ -115,10 +118,9 @@ class AppViewModel : ViewModel() {
         Clipboard.copyTextToClipboard(email)
     }
 
-    fun openMail(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = getMailContent(id)
-            Logger(response.toString())
+    suspend fun openMail(id: Int): EmailMessage {
+        return withContext(Dispatchers.IO) {
+            getMailContent(id)
         }
     }
 
