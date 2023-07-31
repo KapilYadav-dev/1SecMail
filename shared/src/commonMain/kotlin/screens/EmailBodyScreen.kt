@@ -22,6 +22,7 @@ import components.MailView
 import model.EmailBody
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import res.whiteColor
 
 
@@ -38,16 +39,31 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
         Column(
             Modifier.background(whiteColor).padding(8.dp).fillMaxSize().verticalScroll(scrollState)
         ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                tint = Color.Black.copy(alpha = 0.8f),
-                modifier = Modifier.padding(16.dp).size(
-                    24.dp
-                ).clickable {
-                    navigator?.pop()
-                },
-                contentDescription = "back"
-            )
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    tint = Color.Black.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(16.dp).size(
+                        24.dp
+                    ).clickable {
+                        navigator?.pop()
+                    },
+                    contentDescription = "back"
+                )
+                if(body.attachments?.isNotEmpty()==true) {
+                    Icon(
+                        painter = painterResource("attachment.xml"),
+                        tint = Color.Black.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(16.dp).size(
+                            24.dp
+                        ).clickable {
+                            navigator?.pop()
+                        },
+                        contentDescription = "download"
+                    )
+                }
+
+            }
             Text(
                 text = body.subject.toString(),
                 fontFamily = appFont,
