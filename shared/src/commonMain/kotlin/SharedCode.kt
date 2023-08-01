@@ -1,9 +1,6 @@
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import model.DialogProps
 
 expect val appFont: FontFamily
 
@@ -20,3 +17,11 @@ expect object Platform {
 expect class FileDownloader() {
     suspend fun downloadFile(url: String, destination: String): Boolean
 }
+
+@Composable
+expect fun showDialog(
+    msg: String,
+    desc: String,
+    positiveProps:DialogProps?=null,
+    negativeProps:DialogProps?=null,
+)

@@ -5,6 +5,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
+import model.DialogProps
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 import platform.Foundation.*
@@ -24,7 +25,7 @@ actual object Clipboard {
 
 @Composable
 actual fun showToast(msg: String) {
-    showAlert(msg)
+    showAlert(msg,"",DialogProps("ok") {},null)
 }
 @OptIn(ExperimentalResourceApi::class)
 fun loadFont(res:String): Font {
@@ -52,17 +53,31 @@ actual class FileDownloader actual constructor() {
     }
 }
 
-fun showAlert(title:String) {
+fun showAlert(title: String,desc:String,positiveProps: DialogProps?, negativeProps: DialogProps?) {
     val alertController = UIAlertController.alertControllerWithTitle(
         title = title,
-        message = null,
+        message = desc,
         preferredStyle = 1
     )
-    alertController.addAction(
-        UIAlertAction.actionWithTitle("ok", style = 0) { _ ->
-
-        }
-    )
+    positiveProps?.let {
+        alertController.addAction(
+            UIAlertAction.actionWithTitle(it.text, style = 0) { _ ->
+                it.onClick.invoke()
+            }
+        )
+    }
+    negativeProps?.let {
+        alertController.addAction(
+            UIAlertAction.actionWithTitle(it.text, style = 0) { _ ->
+                it.onClick.invoke()
+            }
+        )
+    }
     val self = UIApplication.sharedApplication.keyWindow?.rootViewController
     self?.presentViewController(alertController, animated = true, completion = null)
+}
+
+@Composable
+actual fun showDialog(msg: String,desc:String,positiveProps: DialogProps?, negativeProps: DialogProps?) {
+    showAlert(msg,desc,positiveProps,negativeProps)
 }

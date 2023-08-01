@@ -7,6 +7,7 @@ import java.awt.datatransfer.StringSelection
 import javax.swing.JOptionPane
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import model.DialogProps
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -62,6 +63,34 @@ actual class FileDownloader actual constructor() {
                 e.printStackTrace()
                 false
             }
+        }
+    }
+}
+
+@Composable
+actual fun showDialog(
+    msg: String,
+    desc: String,
+    positiveProps: DialogProps?,
+    negativeProps: DialogProps?
+) {
+    val options = arrayOf(positiveProps?.text, negativeProps?.text)
+    val result = JOptionPane.showOptionDialog(
+        null,
+        desc,
+        msg,
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.INFORMATION_MESSAGE,
+        null,
+        options,
+        options[0]
+    )
+    when (result) {
+        0 -> {
+            positiveProps?.onClick?.invoke()
+        }
+        1 -> {
+            negativeProps?.onClick?.invoke()
         }
     }
 }
