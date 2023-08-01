@@ -7,8 +7,9 @@ expect val appFont: FontFamily
 expect object Clipboard {
     fun copyTextToClipboard(text: String)
 }
+
 @Composable
-expect fun showToast(msg:String)
+expect fun showToast(msg: String)
 
 expect object Platform {
     val platformName: String
@@ -22,6 +23,8 @@ expect class FileDownloader() {
 expect fun showDialog(
     msg: String,
     desc: String,
-    positiveProps:DialogProps?=null,
-    negativeProps:DialogProps?=null,
+    positiveProps: DialogProps? = null,
+    negativeProps: DialogProps? = null,
 )
+
+expect fun ExitApp()

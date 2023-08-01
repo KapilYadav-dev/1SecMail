@@ -1,5 +1,6 @@
 package screens
 
+import ExitApp
 import Platform
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -31,6 +32,7 @@ import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
 import kotlinx.coroutines.launch
+import model.DialogProps
 import model.EmailBody
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -38,31 +40,56 @@ import org.jetbrains.compose.resources.painterResource
 import res.blackColor
 import res.blueColor
 import res.whiteColor
+import showDialog
 import showToast
 import utils.Utils
+import utils.Utils.resetValue
 import viewModels.AppViewModel
 import viewModels.UiState
 
 
 @ExperimentalResourceApi
-class HomeScreen:Screen {
+class HomeScreen : Screen {
 
     override val key: ScreenKey
         get() = "homeScreen"
+
     @Composable
     override fun Content() {
         val scope = rememberCoroutineScope()
         val navigator = LocalNavigator.current
         val viewModel = rememberScreenModel { AppViewModel() }
         val uiState by viewModel.uiState.collectAsState()
-        var showToast by rememberSaveable{ mutableStateOf("") }
+        var showToast by rememberSaveable { mutableStateOf("") }
         val clipboardManager = LocalClipboardManager.current
         val emailList: List<EmailBody> by viewModel.emailList.collectAsState()
-        val topPadding = if(Platform.platformName == "android") 0.dp else 16.dp
+        val errorState: String by viewModel.errorPipeLine.collectAsState()
+        val topPadding = if (Platform.platformName == "android") 0.dp else 16.dp
 
-        if(showToast.isNotEmpty()) {
+        if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast=""
+            showToast.resetValue()
+        }
+        /*
+         * Handling error state using dialog box implemented on each platforms
+         */
+        if (errorState.isNotEmpty()) {
+            showDialog(
+                msg = "error",
+                desc = errorState,
+                positiveProps = DialogProps(
+                    "retry",
+                    onClick = {
+                        viewModel.resetError()
+                    }
+                ),
+                negativeProps = DialogProps(
+                    "exit",
+                    onClick = {
+                        ExitApp()
+                    }
+                )
+            )
         }
         when (uiState) {
             UiState.Loading -> {
@@ -113,7 +140,7 @@ class HomeScreen:Screen {
                     /*
                      * This is the email box
                      */
-                    EmailBox(email = { viewModel.email.value },emailCount={ emailList.size })
+                    EmailBox(email = { viewModel.email.value }, emailCount = { emailList.size })
                     /*
                      * These are the copy and new mail buttons
                      */
@@ -127,7 +154,7 @@ class HomeScreen:Screen {
                             Modifier.weight(1f).padding(start = 16.dp)
                         ) {
                             viewModel.generateNewMail()
-                            showToast="generating new mail"
+                            showToast = "generating new mail"
                         }
                         Spacer(modifier = Modifier.weight(0.1f))
                         CtaIconButton(
@@ -137,13 +164,13 @@ class HomeScreen:Screen {
                         ) {
                             viewModel.copyMail(viewModel.email.value)
                             clipboardManager.setText(AnnotatedString(viewModel.email.value))
-                            showToast="copied to clipboard"
+                            showToast = "copied to clipboard"
                         }
                     }
                     /*
                      * this is our mail box area where mails will appear
                      */
-                    if(emailList.isNotEmpty()) {
+                    if (emailList.isNotEmpty()) {
                         LazyColumn(
                             modifier = Modifier.fillMaxWidth()
                                 .padding(start = 16.dp, end = 16.dp, top = 24.dp)
@@ -153,9 +180,9 @@ class HomeScreen:Screen {
                                 key = { _, item -> item.id }) { idx, item ->
                                 MailView(item, idx) {
                                     scope.launch {
-                                        if(viewModel.cache.containsKey(it.id)) {
+                                        if (viewModel.cache.containsKey(it.id)) {
                                             val data = viewModel.cache[it.id]
-                                            navigator?.push(EmailBodyScreen(data?: EmailMessage()))
+                                            navigator?.push(EmailBodyScreen(data ?: EmailMessage()))
                                         } else {
                                             val data = viewModel.openMail(it.id)
                                             viewModel.cache[it.id] = data
@@ -169,7 +196,10 @@ class HomeScreen:Screen {
                         /*
                          * If there is no mail then we'll show fetching status
                          */
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(40.dp),

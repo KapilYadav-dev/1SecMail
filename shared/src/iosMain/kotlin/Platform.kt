@@ -10,6 +10,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 import platform.Foundation.*
 import platform.UIKit.*
+import platform.posix.exit
 
 
 actual val appFont: FontFamily = FontFamily(
@@ -25,14 +26,20 @@ actual object Clipboard {
 
 @Composable
 actual fun showToast(msg: String) {
-    showAlert(msg,"",DialogProps("ok") {},null)
+    showAlert(msg, "", DialogProps("ok") {}, null)
 }
+
 @OptIn(ExperimentalResourceApi::class)
-fun loadFont(res:String): Font {
+fun loadFont(res: String): Font {
     val byteArray = runBlocking {
         resource("fonts/$res.ttf").readBytes()
     }
-    return androidx.compose.ui.text.platform.Font(res, byteArray,FontWeight.SemiBold, FontStyle.Normal)
+    return androidx.compose.ui.text.platform.Font(
+        res,
+        byteArray,
+        FontWeight.SemiBold,
+        FontStyle.Normal
+    )
 }
 
 actual object Platform {
@@ -53,7 +60,12 @@ actual class FileDownloader actual constructor() {
     }
 }
 
-fun showAlert(title: String,desc:String,positiveProps: DialogProps?, negativeProps: DialogProps?) {
+fun showAlert(
+    title: String,
+    desc: String,
+    positiveProps: DialogProps?,
+    negativeProps: DialogProps?
+) {
     val alertController = UIAlertController.alertControllerWithTitle(
         title = title,
         message = desc,
@@ -78,6 +90,15 @@ fun showAlert(title: String,desc:String,positiveProps: DialogProps?, negativePro
 }
 
 @Composable
-actual fun showDialog(msg: String,desc:String,positiveProps: DialogProps?, negativeProps: DialogProps?) {
-    showAlert(msg,desc,positiveProps,negativeProps)
+actual fun showDialog(
+    msg: String,
+    desc: String,
+    positiveProps: DialogProps?,
+    negativeProps: DialogProps?
+) {
+    showAlert(msg, desc, positiveProps, negativeProps)
+}
+
+actual fun ExitApp() {
+    exit(0)
 }

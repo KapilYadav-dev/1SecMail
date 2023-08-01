@@ -21,6 +21,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import kotlin.system.exitProcess
 
 
 actual val appFont: FontFamily = FontFamily(
@@ -129,4 +130,8 @@ actual fun showDialog(
             }
         }
     )
+}
+
+actual fun ExitApp() {
+    exitProcess(0)
 }

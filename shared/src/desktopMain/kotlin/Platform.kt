@@ -12,6 +12,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import kotlin.system.exitProcess
 
 actual val appFont: FontFamily
     get() = FontFamily(
@@ -93,4 +94,8 @@ actual fun showDialog(
             negativeProps?.onClick?.invoke()
         }
     }
+}
+
+actual fun ExitApp() {
+    exitProcess(0)
 }

@@ -26,6 +26,8 @@ class AppViewModel : ScreenModel {
     var email = mutableStateOf("")
     private val _emailList = MutableStateFlow(mutableListOf<EmailBody>())
     val emailList: StateFlow<List<EmailBody>> get() = _emailList
+    private val _errorPipeLine = MutableStateFlow("")
+    val errorPipeLine: StateFlow<String> get() = _errorPipeLine
     val cache by mutableStateOf(mutableMapOf<Int, EmailMessage>())
     private var job: Job? = null
 
@@ -39,16 +41,22 @@ class AppViewModel : ScreenModel {
         if (job != null && job?.isActive == true) job?.cancel()
     }
 
+    fun resetError() {
+        coroutineScope.launch {
+            _errorPipeLine.emit("")
+        }
+    }
+
     private fun fetchMail() {
         coroutineScope.launch(Dispatchers.IO) {
-            try {
+            kotlin.runCatching {
                 _uiState.emit(UiState.Loading)
-                getNewMail().getOrElse(0){"error,generate new mail"}.let {
+                getNewMail().getOrElse(0) { "error,generate new mail" }.let {
                     email.value = it
                     _uiState.emit(UiState.Success(it))
                 }
-            } catch (e: Exception) {
-                _uiState.emit(UiState.Error("Error loading data"))
+            }.onFailure {
+                _errorPipeLine.emit("Error occurred : ${it.message}")
             }
         }
     }
@@ -70,6 +78,7 @@ class AppViewModel : ScreenModel {
             return response.body()
         }.onFailure {
             println("getNewMail ke time ${it.message}")
+            _errorPipeLine.emit("Error occurred : ${it.message}")
             return emptyList()
         }
         return emptyList()
@@ -77,7 +86,7 @@ class AppViewModel : ScreenModel {
 
     private fun repeatApiCall(): Job {
         // Use the CoroutineScope to launch the coroutine
-        val scope = CoroutineScope(Dispatchers.Default)
+        val scope = CoroutineScope(Dispatchers.IO)
         return scope.launch {
             var isRunning = true
 
@@ -107,6 +116,7 @@ class AppViewModel : ScreenModel {
             Logger("Email list is ${response.body<List<EmailBody>>()}")
             return response.body()
         }.onFailure {
+            _errorPipeLine.emit("Error occurred : ${it.message}")
             return emptyList()
         }
         return emptyList()
@@ -119,7 +129,7 @@ class AppViewModel : ScreenModel {
 
     fun generateNewMail() {
         coroutineScope.launch(Dispatchers.IO) {
-            getNewMail().getOrElse(0){"error,generate new mail"}.let {
+            getNewMail().getOrElse(0) { "error,generate new mail" }.let {
                 email.value = it
                 _emailList.emit(mutableListOf())
             }
@@ -151,9 +161,10 @@ class AppViewModel : ScreenModel {
             return response.body()
         }.onFailure {
             println("getMailContent ke time ${it.message}")
+            _errorPipeLine.emit("Error occurred : ${it.message}")
             return EmailMessage()
         }
-       return EmailMessage()
+        return EmailMessage()
     }
 
 
