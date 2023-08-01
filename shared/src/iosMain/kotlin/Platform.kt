@@ -3,13 +3,13 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import kotlinx.coroutines.runBlocking
+import io.ktor.client.request.*
+import kotlinx.coroutines.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
-import platform.UIKit.*
-import kotlinx.coroutines.*
 import platform.Foundation.*
-import platform.darwin.NSObject
+import platform.UIKit.*
+
 
 actual val appFont: FontFamily = FontFamily(
     loadFont("font")
@@ -24,6 +24,7 @@ actual object Clipboard {
 
 @Composable
 actual fun showToast(msg: String) {
+    showAlert(msg)
 }
 @OptIn(ExperimentalResourceApi::class)
 fun loadFont(res:String): Font {
@@ -49,4 +50,19 @@ actual class FileDownloader actual constructor() {
             false
         }
     }
+}
+
+fun showAlert(title:String) {
+    val alertController = UIAlertController.alertControllerWithTitle(
+        title = title,
+        message = null,
+        preferredStyle = 1
+    )
+    alertController.addAction(
+        UIAlertAction.actionWithTitle("ok", style = 0) { _ ->
+
+        }
+    )
+    val self = UIApplication.sharedApplication.keyWindow?.rootViewController
+    self?.presentViewController(alertController, animated = true, completion = null)
 }
