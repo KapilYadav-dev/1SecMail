@@ -25,7 +25,8 @@ class AppViewModel : ScreenModel {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> get() = _uiState
     var email = mutableStateOf("")
-    var emailList by mutableStateOf(mutableListOf<EmailBody>())
+    private val _emailList = MutableStateFlow(mutableListOf<EmailBody>())
+    val emailList: StateFlow<List<EmailBody>> get() = _emailList
     val cache by mutableStateOf(mutableMapOf<Int,EmailMessage>())
     private var job: Job? = null
 
@@ -79,7 +80,7 @@ class AppViewModel : ScreenModel {
 
             while (isRunning) {
                 // Perform your API call here (replace with your actual API call code)
-                emailList = getEmailList().toMutableList()
+                _emailList.emit(getEmailList().toMutableList())
                 // Delay for 5 seconds before the next iteration
                 delay(5000L)
                 // Check if the coroutine should be stopped
@@ -112,7 +113,7 @@ class AppViewModel : ScreenModel {
         coroutineScope.launch(Dispatchers.IO) {
             getNewMail().getOrNull(0)?.let {
                 email.value = it
-                emailList= mutableListOf()
+                _emailList.emit(mutableListOf())
             } ?: kotlin.run {
                 TODO("SET A PROMPT TO SHOW email can't be fetch")
             }

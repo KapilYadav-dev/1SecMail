@@ -31,6 +31,7 @@ import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
 import kotlinx.coroutines.launch
+import model.EmailBody
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -56,7 +57,7 @@ class HomeScreen:Screen {
         val uiState by viewModel.uiState.collectAsState()
         var showToast by rememberSaveable{ mutableStateOf("") }
         val clipboardManager = LocalClipboardManager.current
-
+        val emailList: List<EmailBody> by viewModel.emailList.collectAsState()
         val topPadding = if(Platform.platformName == "android") 0.dp else 16.dp
 
         if(showToast.isNotEmpty()) {
@@ -93,7 +94,7 @@ class HomeScreen:Screen {
                         thickness = 1.dp,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
                     )
-                    AnimatedVisibility(viewModel.emailList.isEmpty()) {
+                    AnimatedVisibility(emailList.isEmpty()) {
                         Image(
                             painterResource("img-before.xml"),
                             modifier = Modifier.fillMaxWidth().height(160.dp),
@@ -101,7 +102,7 @@ class HomeScreen:Screen {
                             contentDescription = null
                         )
                     }
-                    AnimatedVisibility(viewModel.emailList.isNotEmpty()) {
+                    AnimatedVisibility(emailList.isNotEmpty()) {
                         Image(
                             painterResource("img-after.xml"),
                             modifier = Modifier.fillMaxWidth().height(160.dp),
@@ -112,7 +113,7 @@ class HomeScreen:Screen {
                     /*
                      * This is the email box
                      */
-                    EmailBox(email = { viewModel.email.value },emailCount={ viewModel.emailList.size })
+                    EmailBox(email = { viewModel.email.value },emailCount={ emailList.size })
                     /*
                      * These are the copy and new mail buttons
                      */
@@ -142,13 +143,13 @@ class HomeScreen:Screen {
                     /*
                      * this is our mail box area where mails will appear
                      */
-                    if(viewModel.emailList.isNotEmpty()) {
+                    if(emailList.isNotEmpty()) {
                         LazyColumn(
                             modifier = Modifier.fillMaxWidth()
                                 .padding(start = 16.dp, end = 16.dp, top = 24.dp)
                         ) {
                             itemsIndexed(
-                                items = viewModel.emailList,
+                                items = emailList,
                                 key = { _, item -> item.id }) { idx, item ->
                                 MailView(item, idx) {
                                     scope.launch {
