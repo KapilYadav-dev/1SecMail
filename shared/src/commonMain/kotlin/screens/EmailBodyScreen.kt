@@ -63,7 +63,7 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
                     modifier = Modifier.padding(16.dp).size(
                         24.dp
                     ).clickable {
-                        navigator?.pop()
+                        navigator?.push(HomeScreen())
                     },
                     contentDescription = "back"
                 )

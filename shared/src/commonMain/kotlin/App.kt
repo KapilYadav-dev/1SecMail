@@ -8,6 +8,8 @@ import screens.HomeScreen
 @Composable
 fun App() {
     MaterialTheme {
-        Navigator(HomeScreen())
+        Navigator(HomeScreen(), onBackPressed = {
+            false
+        })
     }
 }

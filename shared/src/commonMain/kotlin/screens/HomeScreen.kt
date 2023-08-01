@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import appFont
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import components.CtaIconButton
 import components.CtaIconButtonActions
@@ -44,6 +45,9 @@ import viewModels.UiState
 
 @ExperimentalResourceApi
 class HomeScreen:Screen {
+
+    override val key: ScreenKey
+        get() = "homeScreen"
     @Composable
     override fun Content() {
         val scope = rememberCoroutineScope()
@@ -148,7 +152,6 @@ class HomeScreen:Screen {
                                 key = { _, item -> item.id }) { idx, item ->
                                 MailView(item, idx) {
                                     scope.launch {
-                                        println("Cache is ${viewModel.cache}")
                                         if(viewModel.cache.containsKey(it.id)) {
                                             val data = viewModel.cache[it.id]
                                             navigator?.push(EmailBodyScreen(data?: EmailMessage()))
