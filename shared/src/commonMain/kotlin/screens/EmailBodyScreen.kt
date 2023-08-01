@@ -79,10 +79,9 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
                                 val path = "../${it.filename}"
                                 scope.launch {
                                     val isSuccess = FileDownloader().downloadFile(url, path)
-                                    println(isSuccess)
+                                    showToast="Downloading ${if(isSuccess) "started" else "failed"}"
                                 }
                             }
-                            showToast="Downloading finished"
                         },
                         contentDescription = "download"
                     )
