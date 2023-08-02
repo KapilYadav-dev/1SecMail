@@ -3,7 +3,6 @@ package viewModels
 import Clipboard
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
 import io.ktor.client.call.*
@@ -25,8 +24,11 @@ class AppViewModel : ScreenModel {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> get() = _uiState
     var email = mutableStateOf("")
-    var emailList by mutableStateOf(mutableListOf<EmailBody>())
-    val cache by mutableStateOf(mutableMapOf<Int,EmailMessage>())
+    private val _emailList = MutableStateFlow(mutableListOf<EmailBody>())
+    val emailList: StateFlow<List<EmailBody>> get() = _emailList
+    private val _errorPipeLine = MutableStateFlow("")
+    val errorPipeLine: StateFlow<String> get() = _errorPipeLine
+    val cache by mutableStateOf(mutableMapOf<Int, EmailMessage>())
     private var job: Job? = null
 
     init {
@@ -39,47 +41,58 @@ class AppViewModel : ScreenModel {
         if (job != null && job?.isActive == true) job?.cancel()
     }
 
+    fun resetError() {
+        coroutineScope.launch {
+            _errorPipeLine.emit("")
+        }
+    }
+
     private fun fetchMail() {
         coroutineScope.launch(Dispatchers.IO) {
-            try {
+            kotlin.runCatching {
                 _uiState.emit(UiState.Loading)
-                getNewMail().getOrNull(0)?.let {
+                getNewMail().getOrElse(0) { "error,generate new mail" }.let {
                     email.value = it
                     _uiState.emit(UiState.Success(it))
-                } ?: run {
-                    _uiState.emit(UiState.Error("Email can't be fetch"))
                 }
-            } catch (e: Exception) {
-                _uiState.emit(UiState.Error("Error loading data"))
+            }.onFailure {
+                _errorPipeLine.emit("Error occurred : ${it.message}")
             }
         }
     }
 
     private suspend fun getNewMail(): List<String> {
-        val response = httpClient.get {
-            url {
-                takeFrom(BASE_URL)
-                parameters.append("action", "genRandomMailbox")
-                parameters.append("count", "1")
+        kotlin.runCatching {
+            val response = httpClient.get {
+                url {
+                    takeFrom(BASE_URL)
+                    parameters.append("action", "genRandomMailbox")
+                    parameters.append("count", "1")
+                }
             }
+            if (response.status == HttpStatusCode.OK) {
+                if (job != null && job!!.isActive) job?.cancel("Already a email fetching job was running so closing this one.")
+                job = repeatApiCall()
+            }
+            Logger("Email is ${response.body<List<String>>()[0]}")
+            return response.body()
+        }.onFailure {
+            println("getNewMail ke time ${it.message}")
+            _errorPipeLine.emit("Error occurred : ${it.message}")
+            return emptyList()
         }
-        if (response.status == HttpStatusCode.OK) {
-            if (job != null && job!!.isActive) job?.cancel("Already a email fetching job was running so closing this one.")
-            job = repeatApiCall()
-        }
-        Logger("Email is ${response.body<List<String>>()[0]}")
-        return response.body()
+        return emptyList()
     }
 
     private fun repeatApiCall(): Job {
         // Use the CoroutineScope to launch the coroutine
-        val scope = CoroutineScope(Dispatchers.Default)
+        val scope = CoroutineScope(Dispatchers.IO)
         return scope.launch {
             var isRunning = true
 
             while (isRunning) {
                 // Perform your API call here (replace with your actual API call code)
-                emailList = getEmailList().toMutableList()
+                _emailList.emit(getEmailList().toMutableList())
                 // Delay for 5 seconds before the next iteration
                 delay(5000L)
                 // Check if the coroutine should be stopped
@@ -91,25 +104,34 @@ class AppViewModel : ScreenModel {
     }
 
     private suspend fun getEmailList(): List<EmailBody> {
-        val response = httpClient.get {
-            url {
-                takeFrom(BASE_URL)
-                parameters.append("action", "getMessages")
-                parameters.append("login", email.value.getNameFromEmail())
-                parameters.append("domain", email.value.getDomainFromEmail())
+        kotlin.runCatching {
+            val response = httpClient.get {
+                url {
+                    takeFrom(BASE_URL)
+                    parameters.append("action", "getMessages")
+                    parameters.append("login", email.value.getNameFromEmail())
+                    parameters.append("domain", email.value.getDomainFromEmail())
+                }
             }
+            Logger("Email list is ${response.body<List<EmailBody>>()}")
+            return response.body()
+        }.onFailure {
+            _errorPipeLine.emit("Error occurred : ${it.message}")
+            return emptyList()
         }
-        Logger("Email list is ${response.body<List<EmailBody>>()}")
-        return response.body()
+        return emptyList()
+    }
+
+
+    fun getDownloadUrl(id: String, file: String): String {
+        return "$BASE_URL?action=download&login=${email.value.getNameFromEmail()}&domain=${email.value.getDomainFromEmail()}&id=$id&file=$file"
     }
 
     fun generateNewMail() {
         coroutineScope.launch(Dispatchers.IO) {
-            getNewMail().getOrNull(0)?.let {
+            getNewMail().getOrElse(0) { "error,generate new mail" }.let {
                 email.value = it
-                emailList= mutableListOf()
-            } ?: kotlin.run {
-                TODO("SET A PROMPT TO SHOW email can't be fetch")
+                _emailList.emit(mutableListOf())
             }
         }
     }
@@ -124,18 +146,25 @@ class AppViewModel : ScreenModel {
         }
     }
 
-    private suspend fun getMailContent(id:Int): EmailMessage {
-        val response = httpClient.get {
-            url {
-                takeFrom(BASE_URL)
-                parameters.append("action", "readMessage")
-                parameters.append("login", email.value.getNameFromEmail())
-                parameters.append("domain", email.value.getDomainFromEmail())
-                parameters.append("id", id.toString())
+    private suspend fun getMailContent(id: Int): EmailMessage {
+        kotlin.runCatching {
+            val response = httpClient.get {
+                url {
+                    takeFrom(BASE_URL)
+                    parameters.append("action", "readMessage")
+                    parameters.append("login", email.value.getNameFromEmail())
+                    parameters.append("domain", email.value.getDomainFromEmail())
+                    parameters.append("id", id.toString())
+                }
             }
+            Logger("Email Content is ${response.body<EmailMessage>()}")
+            return response.body()
+        }.onFailure {
+            println("getMailContent ke time ${it.message}")
+            _errorPipeLine.emit("Error occurred : ${it.message}")
+            return EmailMessage()
         }
-        Logger("Email Content is ${response.body<EmailMessage>()}")
-        return response.body()
+        return EmailMessage()
     }
 
 
@@ -148,14 +177,64 @@ sealed class UiState {
 }
 
 fun getFakeMailList() = listOf(
-    EmailBody("","infokaydev@gmail.vom",1,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",2,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",3,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",4,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",5,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",6,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",7,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",8,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",9,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
-    EmailBody("","infokaydev@gmail.vom",10,"Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        1,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        2,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        3,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        4,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        5,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        6,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        7,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        8,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        9,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
+    EmailBody(
+        "",
+        "infokaydev@gmail.vom",
+        10,
+        "Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification"
+    ),
 )
