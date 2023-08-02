@@ -99,3 +99,5 @@ actual fun showDialog(
 actual fun ExitApp() {
     exitProcess(0)
 }
+
+actual typealias AppSerializable = java.io.Serializable

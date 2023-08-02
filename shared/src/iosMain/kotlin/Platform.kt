@@ -102,3 +102,5 @@ actual fun showDialog(
 actual fun ExitApp() {
     exit(0)
 }
+
+actual interface AppSerializable

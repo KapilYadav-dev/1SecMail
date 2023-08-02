@@ -28,3 +28,5 @@ expect fun showDialog(
 )
 
 expect fun ExitApp()
+
+expect interface AppSerializable

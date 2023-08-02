@@ -131,7 +131,7 @@ class AppViewModel : ScreenModel {
         coroutineScope.launch(Dispatchers.IO) {
             getNewMail().getOrElse(0) { "error,generate new mail" }.let {
                 email.value = it
-                _emailList.emit(mutableListOf())
+                _emailList.emit(emptyList<EmailBody>().toMutableList())
             }
         }
     }
