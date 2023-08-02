@@ -43,7 +43,6 @@ import res.whiteColor
 import showDialog
 import showToast
 import utils.Utils
-import utils.Utils.resetValue
 import viewModels.AppViewModel
 import viewModels.UiState
 
@@ -68,7 +67,7 @@ class HomeScreen : Screen {
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast.resetValue()
+            showToast=""
         }
         /*
          * Handling error state using dialog box implemented on each platforms
