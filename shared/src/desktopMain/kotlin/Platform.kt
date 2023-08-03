@@ -23,22 +23,12 @@ actual val appFont: FontFamily
         )
     )
 
-actual object Clipboard {
-    actual fun copyTextToClipboard(text: String) {
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val stringSelection = StringSelection(text)
-        clipboard.setContents(stringSelection, null)
-    }
-}
-
 @Composable
 actual fun showToast(msg: String) {
     JOptionPane.showMessageDialog(null, msg)
 }
 
-actual object Platform {
-    actual val platformName: String = "desktop"
-}
+actual val platformName: String = "desktop"
 
 actual class FileDownloader actual constructor() {
     actual suspend fun downloadFile(url: String, destination: String): Boolean {

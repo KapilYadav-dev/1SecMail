@@ -4,16 +4,10 @@ import model.DialogProps
 
 expect val appFont: FontFamily
 
-expect object Clipboard {
-    fun copyTextToClipboard(text: String)
-}
-
 @Composable
 expect fun showToast(msg: String)
 
-expect object Platform {
-    val platformName: String
-}
+expect val platformName: String
 
 expect class FileDownloader() {
     suspend fun downloadFile(url: String, destination: String): Boolean

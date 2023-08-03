@@ -28,20 +28,12 @@ actual val appFont: FontFamily = FontFamily(
     Font(R.font.font)
 )
 
-actual object Clipboard {
-    actual fun copyTextToClipboard(text: String) {
-
-    }
-}
-
 @Composable
 actual fun showToast(msg: String) {
     Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
 }
 
-actual object Platform {
-    actual val platformName: String = "android"
-}
+actual val platformName: String = "android"
 
 actual class FileDownloader actual constructor() {
     actual suspend fun downloadFile(url: String, destination: String): Boolean {
