@@ -21,6 +21,6 @@ expect fun showDialog(
     negativeProps: DialogProps? = null,
 )
 
-expect fun ExitApp()
+expect fun exitApp()
 
 expect interface AppSerializable

@@ -1,6 +1,6 @@
 package screens
 
-import ExitApp
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +30,7 @@ import components.CtaIconButton
 import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
+import exitApp
 import kotlinx.coroutines.launch
 import model.DialogProps
 import model.EmailBody
@@ -85,7 +86,7 @@ class HomeScreen : Screen {
                 negativeProps = DialogProps(
                     "exit",
                     onClick = {
-                        ExitApp()
+                        exitApp()
                     }
                 )
             )

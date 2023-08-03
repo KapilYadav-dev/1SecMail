@@ -90,7 +90,7 @@ actual fun showDialog(
     showAlert(msg, desc, positiveProps, negativeProps)
 }
 
-actual fun ExitApp() {
+actual fun exitApp() {
     exit(0)
 }
 

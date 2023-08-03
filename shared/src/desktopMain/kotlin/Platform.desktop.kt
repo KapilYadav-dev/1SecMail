@@ -84,7 +84,7 @@ actual fun showDialog(
     }
 }
 
-actual fun ExitApp() {
+actual fun exitApp() {
     exitProcess(0)
 }
 
