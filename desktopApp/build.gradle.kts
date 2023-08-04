@@ -29,6 +29,19 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "1SecMail App"
             packageVersion = "1.0.0"
+            description = "1SecMail - Temporary mail box"
+            copyright = "© 2023 Kapil Yadav. All rights reserved."
+
+            val iconsRoot = project.file("src/jvmMain/resources/icons/")
+            macOS {
+                iconFile.set(iconsRoot.resolve("icon.icns"))
+            }
+            windows {
+                iconFile.set(iconsRoot.resolve("icon.ico"))
+            }
+            linux {
+                iconFile.set(iconsRoot.resolve("icon.png"))
+            }
         }
     }
 }
