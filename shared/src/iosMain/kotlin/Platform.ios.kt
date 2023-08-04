@@ -17,13 +17,6 @@ actual val appFont: FontFamily = FontFamily(
     loadFont("font")
 )
 
-actual object Clipboard {
-    actual fun copyTextToClipboard(text: String) {
-        val pasteboard = UIPasteboard.generalPasteboard()
-        pasteboard.string = text
-    }
-}
-
 @Composable
 actual fun showToast(msg: String) {
     showAlert(msg, "", DialogProps("ok") {}, null)
@@ -42,24 +35,18 @@ fun loadFont(res: String): Font {
     )
 }
 
-actual object Platform {
-    actual val platformName: String = "ios"
-}
-
-actual class FileDownloader actual constructor() {
-    actual suspend fun downloadFile(url: String, destination: String): Boolean {
-        return try {
-            val nsUrl = NSURL(string = url)
-            val data = NSData.dataWithContentsOfURL(nsUrl)
-            data?.writeToFile(destination, true)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+actual val platformName: String = "ios"
+actual  fun downloadFile(url: String, destination: String): Boolean {
+    return try {
+        val nsUrl = NSURL(string = url)
+        val data = NSData.dataWithContentsOfURL(nsUrl)
+        data?.writeToFile(destination, true)
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
     }
 }
-
 fun showAlert(
     title: String,
     desc: String,
@@ -99,6 +86,8 @@ actual fun showDialog(
     showAlert(msg, desc, positiveProps, negativeProps)
 }
 
-actual fun ExitApp() {
+actual fun exitApp() {
     exit(0)
 }
+
+actual interface AppSerializable

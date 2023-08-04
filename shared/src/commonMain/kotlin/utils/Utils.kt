@@ -27,14 +27,4 @@ object Utils {
     fun Logger(msg:String,isDebug:Boolean=true) {
         if(isDebug) println("Kapil ke logs. Message hai $msg")
     }
-
-    fun Any.resetValue():Any {
-        return when(this) {
-            is String -> ""
-            is Int-> 0
-            is Boolean -> false
-            else -> this
-        }
-    }
-
 }

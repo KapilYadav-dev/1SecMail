@@ -1,4 +1,4 @@
-package com.kay
+package `in`.mrkaydev.OneSecMail
 
 import MainView
 import android.os.Bundle

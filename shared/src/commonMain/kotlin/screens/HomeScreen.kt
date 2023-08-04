@@ -1,7 +1,6 @@
 package screens
 
-import ExitApp
-import Platform
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,19 +30,20 @@ import components.CtaIconButton
 import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
+import exitApp
 import kotlinx.coroutines.launch
 import model.DialogProps
 import model.EmailBody
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import platformName
 import res.blackColor
 import res.blueColor
 import res.whiteColor
 import showDialog
 import showToast
 import utils.Utils
-import utils.Utils.resetValue
 import viewModels.AppViewModel
 import viewModels.UiState
 
@@ -64,11 +64,11 @@ class HomeScreen : Screen {
         val clipboardManager = LocalClipboardManager.current
         val emailList: List<EmailBody> by viewModel.emailList.collectAsState()
         val errorState: String by viewModel.errorPipeLine.collectAsState()
-        val topPadding = if (Platform.platformName == "android") 0.dp else 16.dp
+        val topPadding = if (platformName == "android") 0.dp else 16.dp
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast.resetValue()
+            showToast=""
         }
         /*
          * Handling error state using dialog box implemented on each platforms
@@ -86,7 +86,7 @@ class HomeScreen : Screen {
                 negativeProps = DialogProps(
                     "exit",
                     onClick = {
-                        ExitApp()
+                        exitApp()
                     }
                 )
             )
@@ -162,7 +162,6 @@ class HomeScreen : Screen {
                             CtaIconButtonActions.CopyMail,
                             Modifier.weight(1f).padding(end = 16.dp)
                         ) {
-                            viewModel.copyMail(viewModel.email.value)
                             clipboardManager.setText(AnnotatedString(viewModel.email.value))
                             showToast = "copied to clipboard"
                         }

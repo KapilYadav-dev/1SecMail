@@ -1,5 +1,4 @@
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,48 +27,12 @@ actual val appFont: FontFamily = FontFamily(
     Font(R.font.font)
 )
 
-actual object Clipboard {
-    actual fun copyTextToClipboard(text: String) {
-
-    }
-}
-
 @Composable
 actual fun showToast(msg: String) {
     Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
 }
 
-actual object Platform {
-    actual val platformName: String = "android"
-}
-
-actual class FileDownloader actual constructor() {
-    actual suspend fun downloadFile(url: String, destination: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val connection = URL(url).openConnection()
-                val inputStream = BufferedInputStream(connection.getInputStream())
-                val outputStream = FileOutputStream(File(destination))
-
-                val buffer = ByteArray(1024)
-                var bytesRead: Int
-
-                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    outputStream.write(buffer, 0, bytesRead)
-                }
-
-                outputStream.flush()
-                outputStream.close()
-                inputStream.close()
-
-                true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                false
-            }
-        }
-    }
-}
+actual val platformName: String = "android"
 
 @Composable
 actual fun showDialog(
@@ -132,6 +95,32 @@ actual fun showDialog(
     )
 }
 
-actual fun ExitApp() {
+actual fun exitApp() {
     exitProcess(0)
+}
+
+actual typealias AppSerializable = java.io.Serializable
+
+actual fun downloadFile(url: String, destination: String): Boolean {
+    try {
+        val connection = URL(url).openConnection()
+        val inputStream = BufferedInputStream(connection.getInputStream())
+        val outputStream = FileOutputStream(File(destination))
+
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+
+        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+            outputStream.write(buffer, 0, bytesRead)
+        }
+
+        outputStream.flush()
+        outputStream.close()
+        inputStream.close()
+
+        return true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return false
+    }
 }
