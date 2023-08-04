@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'shared/**'
+      - 'androidApp/**'
+      - 'desktopApp/**'
+      - 'iosApp/**'
 
 jobs:
   build:
