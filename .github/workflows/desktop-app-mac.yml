@@ -7,8 +7,8 @@ on:
 
 jobs:
   build:
-    name: Build Debug APK
-    runs-on: ubuntu-latest
+    name: Build Desktop App (Mac os)
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
@@ -24,11 +24,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build DMG
+        run: ./gradlew packageDmg
 
-      - name: Upload Debug APK
+      - name: Upload DMG
         uses: actions/upload-artifact@v2
         with:
-          name: 1SecMail-debug.apk
-          path: androidApp/build/outputs/apk/debug/androidApp-debug.apk
+          name: 1SecMail-app.dmg
+          path: desktopApp/build/compose/binaries/main/dmg/1SecMail App-1.0.0.dmg
