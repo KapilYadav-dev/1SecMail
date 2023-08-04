@@ -31,6 +31,7 @@ compose.desktop {
             packageVersion = "1.0.0"
             description = "1SecMail - Temporary mail box"
             copyright = "© 2023 Kapil Yadav. All rights reserved."
+            includeAllModules = true
 
             val iconsRoot = project.file("src/jvmMain/resources/icons/")
             macOS {
