@@ -9,10 +9,7 @@ expect fun showToast(msg: String)
 
 expect val platformName: String
 
-expect class FileDownloader() {
-    suspend fun downloadFile(url: String, destination: String): Boolean
-}
-
+expect fun downloadFile(url: String, destination: String): Boolean
 @Composable
 expect fun showDialog(
     msg: String,

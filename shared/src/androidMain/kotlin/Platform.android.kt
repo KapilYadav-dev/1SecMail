@@ -34,34 +34,6 @@ actual fun showToast(msg: String) {
 
 actual val platformName: String = "android"
 
-actual class FileDownloader actual constructor() {
-    actual suspend fun downloadFile(url: String, destination: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val connection = URL(url).openConnection()
-                val inputStream = BufferedInputStream(connection.getInputStream())
-                val outputStream = FileOutputStream(File(destination))
-
-                val buffer = ByteArray(1024)
-                var bytesRead: Int
-
-                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    outputStream.write(buffer, 0, bytesRead)
-                }
-
-                outputStream.flush()
-                outputStream.close()
-                inputStream.close()
-
-                true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                false
-            }
-        }
-    }
-}
-
 @Composable
 actual fun showDialog(
     msg: String,
@@ -128,3 +100,27 @@ actual fun exitApp() {
 }
 
 actual typealias AppSerializable = java.io.Serializable
+
+actual fun downloadFile(url: String, destination: String): Boolean {
+    try {
+        val connection = URL(url).openConnection()
+        val inputStream = BufferedInputStream(connection.getInputStream())
+        val outputStream = FileOutputStream(File(destination))
+
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+
+        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+            outputStream.write(buffer, 0, bytesRead)
+        }
+
+        outputStream.flush()
+        outputStream.close()
+        inputStream.close()
+
+        return true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return false
+    }
+}

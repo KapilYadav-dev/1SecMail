@@ -36,21 +36,17 @@ fun loadFont(res: String): Font {
 }
 
 actual val platformName: String = "ios"
-
-actual class FileDownloader actual constructor() {
-    actual suspend fun downloadFile(url: String, destination: String): Boolean {
-        return try {
-            val nsUrl = NSURL(string = url)
-            val data = NSData.dataWithContentsOfURL(nsUrl)
-            data?.writeToFile(destination, true)
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+actual  fun downloadFile(url: String, destination: String): Boolean {
+    return try {
+        val nsUrl = NSURL(string = url)
+        val data = NSData.dataWithContentsOfURL(nsUrl)
+        data?.writeToFile(destination, true)
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
     }
 }
-
 fun showAlert(
     title: String,
     desc: String,

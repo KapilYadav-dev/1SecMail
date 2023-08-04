@@ -1,6 +1,5 @@
 package screens
 
-import FileDownloader
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +21,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import components.MailView
+import downloadFile
 import kotlinx.coroutines.launch
 import model.EmailBody
 import model.EmailMessage
@@ -78,7 +78,7 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
                                 val url = viewModel.getDownloadUrl(body.id.toString(), it.filename)
                                 val path = "../${it.filename}"
                                 scope.launch {
-                                    val isSuccess = FileDownloader().downloadFile(url, path)
+                                    val isSuccess = downloadFile(url, path)
                                     showToast="Downloading ${if(isSuccess) "started" else "failed"}"
                                 }
                             }
