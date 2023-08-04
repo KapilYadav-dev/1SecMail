@@ -27,7 +27,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "KotlinMultiplatformComposeDesktopApplication"
+            packageName = "1SecMail App"
             packageVersion = "1.0.0"
         }
     }
