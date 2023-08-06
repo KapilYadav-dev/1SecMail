@@ -35,3 +35,13 @@ jobs:
         with:
           name: 1SecMail-app.dmg
           path: desktopApp/build/compose/binaries/main/dmg/1SecMail App-1.0.0.dmg
+
+      - name: Upload binaries to release
+          uses: svenstaro/upload-release-action@v2
+          with:
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
+            file: desktopApp/build/compose/binaries/main/dmg/1SecMail App-1.0.0.dmg
+            asset_name: 1SecMail App
+            tag: ${{ github.ref }}
+            overwrite: true
+            body: "Release for 1SecMail App-1.0.0.dmg"
