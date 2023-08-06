@@ -1,7 +1,12 @@
 name: Build application for Windows and Linux
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'shared/**'
+      - 'desktopApp/**'
 
 jobs:
   linux:

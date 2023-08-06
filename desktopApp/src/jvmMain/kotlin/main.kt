@@ -16,8 +16,7 @@ fun main() = application {
         state = WindowState(
             size = DpSize(800.dp, 900.dp),
             position = WindowPosition(Alignment.Center)
-        ),
-        resizable = false
+        )
     ) {
         MainView()
     }
