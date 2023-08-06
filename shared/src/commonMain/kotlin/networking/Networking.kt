@@ -29,4 +29,3 @@ val httpClient = HttpClient {
 }
 
 const val BASE_URL:String = "https://www.1secmail.com/api/v1/"
-const val GET_MAIL:String = "$BASE_URL?action=genRandomMailbox&count=1"
