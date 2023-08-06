@@ -11,8 +11,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapplication.common.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import model.DialogProps
 import res.blueColor
 import res.whiteColor
