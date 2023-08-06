@@ -1,37 +1,53 @@
-name: Desktop Mac CI
+name: Build application for Windows and Linux
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'shared/**'
-      - 'desktopApp/**'
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build Desktop App (Windows)
-    runs-on: windows-latest
-
+  linux:
+    name: Package on Linux
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
-        uses: actions/setup-java@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Java
+        uses: actions/setup-java@v1
         with:
-          java-version: '18'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Window
+          java-version: 19
+      - name: Set up cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build
+        run: ./gradlew packageDeb
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            desktopApp/build/compose/binaries/main/deb
+  windows:
+    name: Package on Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - name: Set up cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build
         run: ./gradlew packageMsi
-
-      - name: Upload MSI
-        uses: actions/upload-artifact@v2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: 1SecMail-app-msi
-          path: desktopApp/build/compose/binaries/main/msi/1SecMail App-1.0.0.msi
+          path: desktopApp/build/compose/binaries/main/msi
