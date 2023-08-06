@@ -1,4 +1,4 @@
-name: Android CI
+name: Desktop Mac CI
 
 on:
   push:
@@ -6,14 +6,12 @@ on:
       - main
     paths:
       - 'shared/**'
-      - 'androidApp/**'
       - 'desktopApp/**'
-      - 'iosApp/**'
 
 jobs:
   build:
-    name: Build Debug APK
-    runs-on: ubuntu-latest
+    name: Build Desktop App (Windows)
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -22,18 +20,18 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '18'
           distribution: 'temurin'
           cache: gradle
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build Window
+        run: ./gradlew packageMsi
 
-      - name: Upload Debug APK
+      - name: Upload MSI
         uses: actions/upload-artifact@v2
         with:
-          name: 1SecMail-app-apk
-          path: androidApp/build/outputs/apk/debug/androidApp-debug.apk
+          name: 1SecMail-app-msi
+          path: desktopApp/build/compose/binaries/main/msi/1SecMail App-1.0.0.msi
