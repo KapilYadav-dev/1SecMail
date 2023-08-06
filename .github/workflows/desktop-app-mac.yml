@@ -41,7 +41,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: 1SecMail-app-dmg
-          asset_name: 1SecMail App
+          asset_name: 1SecMail App.zip
           tag: ${{ github.ref }}
           overwrite: true
           body: "Release for 1SecMail App-1.0.0.dmg"

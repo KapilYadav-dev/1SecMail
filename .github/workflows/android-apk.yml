@@ -42,7 +42,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: 1SecMail-app-apk
+          file: 1SecMail-app-apk.zip
           asset_name: 1SecMail App
           tag: ${{ github.ref }}
           overwrite: true
