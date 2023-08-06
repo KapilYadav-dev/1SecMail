@@ -206,17 +206,17 @@ class HomeScreen : Screen {
                                 )
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    "fetching mail",
+                                    "you have 0 new messages",
                                     fontFamily = appFont,
                                     fontSize = 18.sp,
-                                    color = blueColor.copy(alpha = 1f)
+                                    color = blackColor.copy(alpha = 1f)
                                 )
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    "new messages will be automatically displayed here",
+                                    "waiting for incoming email",
                                     fontFamily = appFont,
                                     fontSize = 14.sp,
-                                    color = blueColor.copy(alpha = 0.3f),
+                                    color = blackColor.copy(alpha = 0.3f),
                                     modifier = Modifier.padding(horizontal = 24.dp),
                                     textAlign = TextAlign.Center
                                 )
