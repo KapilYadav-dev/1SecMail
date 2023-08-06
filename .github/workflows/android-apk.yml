@@ -46,4 +46,4 @@ jobs:
           asset_name: 1SecMail App
           tag: ${{ github.ref }}
           overwrite: true
-          body: "Release for 1SecMail App-1.0.0.apk
+          body: "Release for 1SecMail App-1.0.0.apk"
