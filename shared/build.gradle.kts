@@ -9,6 +9,8 @@ plugins {
 kotlin {
     android()
 
+    jvmToolchain(17)
+
     jvm("desktop")
 
     iosX64()
@@ -25,7 +27,8 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
-        extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
+        extraSpecAttributes["resources"] =
+            "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
 
     sourceSets {
