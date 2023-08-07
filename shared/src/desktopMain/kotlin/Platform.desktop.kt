@@ -4,6 +4,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import model.DialogProps
+import utils.Utils.Toast
 import utils.Utils.platformNameDesktop
 import java.io.BufferedInputStream
 import java.io.File
@@ -23,7 +24,7 @@ actual val appFont: FontFamily
 
 @Composable
 actual fun showToast(msg: String) {
-    JOptionPane.showMessageDialog(null, msg)
+    Toast(msg)
 }
 
 actual val platformName: String = platformNameDesktop

@@ -31,6 +31,7 @@ import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
 import exitApp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import model.DialogProps
 import model.EmailBody
@@ -44,6 +45,7 @@ import res.whiteColor
 import showDialog
 import showToast
 import utils.Utils
+import utils.Utils.TOAST_TIMER
 import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 import viewModels.UiState
@@ -69,7 +71,10 @@ class HomeScreen : Screen {
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast=""
+            scope.launch {
+                if(platformName != platformNameAndroid) delay(TOAST_TIMER)
+                showToast=""
+            }
         }
         /*
          * Handling error state using dialog box implemented on each platforms

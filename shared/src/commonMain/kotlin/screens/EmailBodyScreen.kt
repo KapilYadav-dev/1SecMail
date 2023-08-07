@@ -23,6 +23,7 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import components.MailView
 import downloadFile
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import model.EmailBody
 import model.EmailMessage
@@ -31,6 +32,7 @@ import org.jetbrains.compose.resources.painterResource
 import platformName
 import res.whiteColor
 import showToast
+import utils.Utils.TOAST_TIMER
 import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 
@@ -50,7 +52,10 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast = ""
+            scope.launch {
+                if(platformName != platformNameAndroid) delay(TOAST_TIMER)
+                showToast=""
+            }
         }
 
         Column(

@@ -12,6 +12,7 @@ import org.jetbrains.compose.resources.resource
 import platform.Foundation.*
 import platform.UIKit.*
 import platform.posix.exit
+import utils.Utils
 import utils.Utils.platformNameIOS
 
 actual val appFont: FontFamily = FontFamily(
@@ -20,7 +21,7 @@ actual val appFont: FontFamily = FontFamily(
 
 @Composable
 actual fun showToast(msg: String) {
-    showAlert(msg, "", DialogProps("ok") {}, null)
+    Utils.Toast(msg)
 }
 
 @OptIn(ExperimentalResourceApi::class)
