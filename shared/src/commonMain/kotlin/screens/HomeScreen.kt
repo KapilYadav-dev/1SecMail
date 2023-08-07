@@ -31,6 +31,7 @@ import components.CtaIconButtonActions
 import components.EmailBox
 import components.MailView
 import exitApp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import model.DialogProps
 import model.EmailBody
@@ -44,6 +45,8 @@ import res.whiteColor
 import showDialog
 import showToast
 import utils.Utils
+import utils.Utils.TOAST_TIMER
+import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 import viewModels.UiState
 
@@ -64,11 +67,14 @@ class HomeScreen : Screen {
         val clipboardManager = LocalClipboardManager.current
         val emailList: List<EmailBody> by viewModel.emailList.collectAsState()
         val errorState: String by viewModel.errorPipeLine.collectAsState()
-        val topPadding = if (platformName == "android") 0.dp else 16.dp
+        val topPadding = if (platformName == platformNameAndroid) 0.dp else 16.dp
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast=""
+            scope.launch {
+                if (platformName != platformNameAndroid) delay(TOAST_TIMER)
+                showToast = ""
+            }
         }
         /*
          * Handling error state using dialog box implemented on each platforms
@@ -101,7 +107,7 @@ class HomeScreen : Screen {
                         )
                         Spacer(modifier = Modifier.height(50.dp))
                         Text(
-                            "stealing mail for you ☠",
+                            "stealing mail for you.",
                             fontFamily = appFont,
                             fontSize = 18.sp,
                             color = blueColor.copy(alpha = 0.3f)
@@ -149,18 +155,19 @@ class HomeScreen : Screen {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         CtaIconButton(
-                            "New Mail",
-                            CtaIconButtonActions.RegenerateMail,
-                            Modifier.weight(1f).padding(start = 16.dp)
+                            text = "New Mail",
+                            action = CtaIconButtonActions.RegenerateMail,
+                            modifier = Modifier.weight(1f).padding(start = 16.dp),
+                            shouldAnimate = true
                         ) {
                             viewModel.generateNewMail()
                             showToast = "generating new mail"
                         }
                         Spacer(modifier = Modifier.weight(0.1f))
                         CtaIconButton(
-                            "Copy Mail",
-                            CtaIconButtonActions.CopyMail,
-                            Modifier.weight(1f).padding(end = 16.dp)
+                            text = "Copy Mail",
+                            action = CtaIconButtonActions.CopyMail,
+                            modifier = Modifier.weight(1f).padding(end = 16.dp)
                         ) {
                             clipboardManager.setText(AnnotatedString(viewModel.email.value))
                             showToast = "copied to clipboard"
@@ -206,17 +213,17 @@ class HomeScreen : Screen {
                                 )
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    "fetching mail",
+                                    "you have 0 new messages",
                                     fontFamily = appFont,
                                     fontSize = 18.sp,
-                                    color = blueColor.copy(alpha = 1f)
+                                    color = blackColor.copy(alpha = 1f)
                                 )
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    "new messages will be automatically displayed here",
+                                    "waiting for incoming email",
                                     fontFamily = appFont,
                                     fontSize = 14.sp,
-                                    color = blueColor.copy(alpha = 0.3f),
+                                    color = blackColor.copy(alpha = 0.3f),
                                     modifier = Modifier.padding(horizontal = 24.dp),
                                     textAlign = TextAlign.Center
                                 )

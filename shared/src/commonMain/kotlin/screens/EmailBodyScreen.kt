@@ -1,5 +1,6 @@
 package screens
 
+import RenderHtml
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,13 +23,17 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import components.MailView
 import downloadFile
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import model.EmailBody
 import model.EmailMessage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import platformName
 import res.whiteColor
 import showToast
+import utils.Utils.TOAST_TIMER
+import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 
 
@@ -43,11 +48,14 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
         val navigator = LocalNavigator.current
         val scrollState = rememberScrollState()
         val scope = rememberCoroutineScope()
-        var showToast by rememberSaveable{ mutableStateOf("") }
+        var showToast by rememberSaveable { mutableStateOf("") }
 
-        if(showToast.isNotEmpty()) {
+        if (showToast.isNotEmpty()) {
             showToast(showToast)
-            showToast=""
+            scope.launch {
+                if(platformName != platformNameAndroid) delay(TOAST_TIMER)
+                showToast=""
+            }
         }
 
         Column(
@@ -79,7 +87,8 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
                                 val path = "../${it.filename}"
                                 scope.launch {
                                     val isSuccess = downloadFile(url, path)
-                                    showToast="Downloading ${if(isSuccess) "started" else "failed"}"
+                                    showToast =
+                                        "Downloading ${if (isSuccess) "started" else "failed"}"
                                 }
                             }
                         },
@@ -105,7 +114,11 @@ class EmailBodyScreen(private val body: EmailMessage) : Screen {
 
                 }, idx = 1
             )
-            Text(
+            if (platformName == platformNameAndroid) RenderHtml(
+                body.htmlBody ?: body.textBody.toString(),
+                Modifier.fillMaxWidth()
+            )
+            else Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = body.textBody.toString(),
                 fontFamily = appFont,

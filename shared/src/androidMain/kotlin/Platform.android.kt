@@ -1,3 +1,5 @@
+import android.annotation.SuppressLint
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,12 +12,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.myapplication.common.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import model.DialogProps
 import res.blueColor
 import res.whiteColor
+import utils.Utils.platformNameAndroid
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -32,7 +34,7 @@ actual fun showToast(msg: String) {
     Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
 }
 
-actual val platformName: String = "android"
+actual val platformName: String = platformNameAndroid
 
 @Composable
 actual fun showDialog(
@@ -123,4 +125,17 @@ actual fun downloadFile(url: String, destination: String): Boolean {
         e.printStackTrace()
         return false
     }
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+actual fun RenderHtml(htmlCode: String, modifier: Modifier) {
+    AndroidView(modifier = modifier, factory = { context ->
+        WebView(context).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            settings.builtInZoomControls = true
+            loadDataWithBaseURL(null, htmlCode, "text/html", "UTF-8", null)
+        }
+    })
 }

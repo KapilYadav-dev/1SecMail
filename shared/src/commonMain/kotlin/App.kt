@@ -1,15 +1,18 @@
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import screens.HomeScreen
+import cafe.adriel.voyager.transitions.FadeTransition
+import screens.SplashScreen
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun App() {
     MaterialTheme {
-        Navigator(HomeScreen(), onBackPressed = {
+        Navigator(SplashScreen(), onBackPressed = {
             false
-        })
+        }) {
+            FadeTransition(it)
+        }
     }
 }
