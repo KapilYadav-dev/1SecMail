@@ -72,8 +72,8 @@ class HomeScreen : Screen {
         if (showToast.isNotEmpty()) {
             showToast(showToast)
             scope.launch {
-                if(platformName != platformNameAndroid) delay(TOAST_TIMER)
-                showToast=""
+                if (platformName != platformNameAndroid) delay(TOAST_TIMER)
+                showToast = ""
             }
         }
         /*
@@ -155,18 +155,19 @@ class HomeScreen : Screen {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         CtaIconButton(
-                            "New Mail",
-                            CtaIconButtonActions.RegenerateMail,
-                            Modifier.weight(1f).padding(start = 16.dp)
+                            text = "New Mail",
+                            action = CtaIconButtonActions.RegenerateMail,
+                            modifier = Modifier.weight(1f).padding(start = 16.dp),
+                            shouldAnimate = true
                         ) {
                             viewModel.generateNewMail()
                             showToast = "generating new mail"
                         }
                         Spacer(modifier = Modifier.weight(0.1f))
                         CtaIconButton(
-                            "Copy Mail",
-                            CtaIconButtonActions.CopyMail,
-                            Modifier.weight(1f).padding(end = 16.dp)
+                            text = "Copy Mail",
+                            action = CtaIconButtonActions.CopyMail,
+                            modifier = Modifier.weight(1f).padding(end = 16.dp)
                         ) {
                             clipboardManager.setText(AnnotatedString(viewModel.email.value))
                             showToast = "copied to clipboard"
