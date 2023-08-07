@@ -107,7 +107,7 @@ class HomeScreen : Screen {
                         )
                         Spacer(modifier = Modifier.height(50.dp))
                         Text(
-                            "stealing mail for you ☠",
+                            "stealing mail for you.",
                             fontFamily = appFont,
                             fontSize = 18.sp,
                             color = blueColor.copy(alpha = 0.3f)

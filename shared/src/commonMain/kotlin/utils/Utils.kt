@@ -1,12 +1,10 @@
 package utils
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +13,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import appFont
-import res.whiteColor
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration.Companion.seconds
 
 object Utils {
@@ -50,6 +49,7 @@ object Utils {
     fun Logger(msg: String, isDebug: Boolean = true) {
         if (isDebug) println("Kapil ke logs. Message hai $msg")
     }
+    @OptIn(ExperimentalResourceApi::class)
     @Composable
     fun Toast(message: String) {
         Popup {
@@ -65,7 +65,7 @@ object Utils {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Spacer(modifier = Modifier.width(2.dp))
-                        Icon(imageVector = Icons.Filled.Notifications, modifier = Modifier.size(24.dp), contentDescription = "", tint = whiteColor)
+                        Image(painter = painterResource("icon.png"), modifier = Modifier.size(24.dp).padding(2.dp), contentDescription = "")
                         Text(
                             text = message,
                             color = Color.White,
