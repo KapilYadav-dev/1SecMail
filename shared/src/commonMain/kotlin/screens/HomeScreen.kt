@@ -44,6 +44,7 @@ import res.whiteColor
 import showDialog
 import showToast
 import utils.Utils
+import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 import viewModels.UiState
 
@@ -64,7 +65,7 @@ class HomeScreen : Screen {
         val clipboardManager = LocalClipboardManager.current
         val emailList: List<EmailBody> by viewModel.emailList.collectAsState()
         val errorState: String by viewModel.errorPipeLine.collectAsState()
-        val topPadding = if (platformName == "android") 0.dp else 16.dp
+        val topPadding = if (platformName == platformNameAndroid) 0.dp else 16.dp
 
         if (showToast.isNotEmpty()) {
             showToast(showToast)

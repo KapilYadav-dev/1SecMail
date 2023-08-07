@@ -1,15 +1,15 @@
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import javax.swing.JOptionPane
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import model.DialogProps
+import utils.Utils.platformNameDesktop
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import javax.swing.JOptionPane
 import kotlin.system.exitProcess
 
 actual val appFont: FontFamily
@@ -26,7 +26,7 @@ actual fun showToast(msg: String) {
     JOptionPane.showMessageDialog(null, msg)
 }
 
-actual val platformName: String = "desktop"
+actual val platformName: String = platformNameDesktop
 
 actual fun downloadFile(url: String, destination: String): Boolean {
     try {
@@ -85,3 +85,7 @@ actual fun exitApp() {
 }
 
 actual typealias AppSerializable = java.io.Serializable
+
+@Composable
+actual fun RenderHtml(htmlCode: String, modifier: Modifier) {
+}

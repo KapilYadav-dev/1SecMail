@@ -1,4 +1,5 @@
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -11,7 +12,7 @@ import org.jetbrains.compose.resources.resource
 import platform.Foundation.*
 import platform.UIKit.*
 import platform.posix.exit
-
+import utils.Utils.platformNameIOS
 
 actual val appFont: FontFamily = FontFamily(
     loadFont("font")
@@ -35,8 +36,8 @@ fun loadFont(res: String): Font {
     )
 }
 
-actual val platformName: String = "ios"
-actual  fun downloadFile(url: String, destination: String): Boolean {
+actual val platformName: String = platformNameIOS
+actual fun downloadFile(url: String, destination: String): Boolean {
     return try {
         val nsUrl = NSURL(string = url)
         val data = NSData.dataWithContentsOfURL(nsUrl)
@@ -47,6 +48,7 @@ actual  fun downloadFile(url: String, destination: String): Boolean {
         false
     }
 }
+
 fun showAlert(
     title: String,
     desc: String,
@@ -91,3 +93,7 @@ actual fun exitApp() {
 }
 
 actual interface AppSerializable
+
+@Composable
+actual fun RenderHtml(htmlCode: String, modifier: Modifier) {
+}

@@ -1,7 +1,11 @@
 package utils
 
 object Utils {
-     fun String.getNameFromEmail(): String {
+    const val platformNameAndroid = "android"
+    const val platformNameIOS = "ios"
+    const val platformNameDesktop = "desktop"
+
+    fun String.getNameFromEmail(): String {
         val atIndex = indexOf('@')
         // If "@" is present and it's not the first or last character
         if (atIndex in 1 until length - 1) {
@@ -12,7 +16,7 @@ object Utils {
         return ""
     }
 
-     fun String.getDomainFromEmail(): String {
+    fun String.getDomainFromEmail(): String {
         // Find the index of "@" symbol in the email
         val atIndex = indexOf('@')
         // If "@" is present and it's not the first or last character
@@ -24,7 +28,7 @@ object Utils {
         return ""
     }
 
-    fun Logger(msg:String,isDebug:Boolean=true) {
-        if(isDebug) println("Kapil ke logs. Message hai $msg")
+    fun Logger(msg: String, isDebug: Boolean = true) {
+        if (isDebug) println("Kapil ke logs. Message hai $msg")
     }
 }
