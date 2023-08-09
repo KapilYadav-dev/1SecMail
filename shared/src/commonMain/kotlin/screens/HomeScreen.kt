@@ -160,7 +160,8 @@ class HomeScreen : Screen {
                             action = CtaIconButtonActions.RegenerateMail,
                             modifier = Modifier.weight(1f).padding(start = 16.dp),
                             shouldAnimate = true,
-                            debounceTimer = 3.seconds
+                            debounceTimer = 3.seconds,
+                            debounceEnabled = true
                         ) {
                             viewModel.generateNewMail()
                             showToast = "generating new mail"

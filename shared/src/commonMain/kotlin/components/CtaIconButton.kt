@@ -35,9 +35,10 @@ fun CtaIconButton(
     modifier: Modifier,
     shouldAnimate: Boolean = false,
     debounceTimer: Duration = 2.seconds,
+    debounceEnabled : Boolean = false,
     onClick: (CtaIconButtonActions) -> Unit = {}
 ) {
-    val rotationState = rememberSaveable { Animatable(0f) }
+    val rotationState = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
     var isBtnEnabled by rememberSaveable { mutableStateOf(true) }
     var showToast by rememberSaveable { mutableStateOf("") }
@@ -71,7 +72,7 @@ fun CtaIconButton(
                     }
 
                 scope.launch {
-                    delay(debounceTimer)
+                    if(debounceEnabled) delay(debounceTimer)
                     isBtnEnabled = true
                 }
             } else showToast = "please wait, we are on free api. Click after ${debounceTimer.inWholeSeconds} seconds"
