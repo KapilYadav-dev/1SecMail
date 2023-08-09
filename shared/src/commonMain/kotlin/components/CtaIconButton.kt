@@ -12,9 +12,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -22,7 +21,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import appFont
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import showToast
+import utils.Utils
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun CtaIconButton(
@@ -30,10 +34,21 @@ fun CtaIconButton(
     action: CtaIconButtonActions,
     modifier: Modifier,
     shouldAnimate: Boolean = false,
+    debounceTimer: Duration = 2.seconds,
     onClick: (CtaIconButtonActions) -> Unit = {}
 ) {
-    val rotationState = remember { Animatable(0f) }
+    val rotationState = rememberSaveable { Animatable(0f) }
     val scope = rememberCoroutineScope()
+    var isBtnEnabled by rememberSaveable { mutableStateOf(true) }
+    var showToast by rememberSaveable { mutableStateOf("") }
+
+    if(showToast.isNotEmpty()) {
+        showToast("please wait, we are on free api. Click after ${debounceTimer.inWholeSeconds} seconds")
+        scope.launch {
+            delay(Utils.TOAST_TIMER)
+            showToast=""
+        }
+    }
 
     Row(
         modifier = modifier.border(
@@ -41,14 +56,25 @@ fun CtaIconButton(
             MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
             RoundedCornerShape(12.dp)
         ).padding(horizontal = 16.dp, vertical = 16.dp).clickable {
-            onClick(action)
-            if (shouldAnimate)
+            if (isBtnEnabled) {
+
+                isBtnEnabled = false
+
+                onClick(action)
+
+                if (shouldAnimate)
+                    scope.launch {
+                        rotationState.animateTo(
+                            targetValue = rotationState.targetValue + 360f,
+                            animationSpec = tween(durationMillis = 1000)
+                        )
+                    }
+
                 scope.launch {
-                    rotationState.animateTo(
-                        targetValue = rotationState.targetValue + 360f,
-                        animationSpec = tween(durationMillis = 1000)
-                    )
+                    delay(debounceTimer)
+                    isBtnEnabled = true
                 }
+            } else showToast = "please wait, we are on free api. Click after ${debounceTimer.inWholeSeconds} seconds"
         },
         verticalAlignment = Alignment.CenterVertically
     ) {

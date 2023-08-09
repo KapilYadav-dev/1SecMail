@@ -49,6 +49,7 @@ import utils.Utils.TOAST_TIMER
 import utils.Utils.platformNameAndroid
 import viewModels.AppViewModel
 import viewModels.UiState
+import kotlin.time.Duration.Companion.seconds
 
 
 @ExperimentalResourceApi
@@ -158,7 +159,8 @@ class HomeScreen : Screen {
                             text = "New Mail",
                             action = CtaIconButtonActions.RegenerateMail,
                             modifier = Modifier.weight(1f).padding(start = 16.dp),
-                            shouldAnimate = true
+                            shouldAnimate = true,
+                            debounceTimer = 3.seconds
                         ) {
                             viewModel.generateNewMail()
                             showToast = "generating new mail"

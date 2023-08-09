@@ -31,7 +31,7 @@ actual val appFont: FontFamily = FontFamily(
 
 @Composable
 actual fun showToast(msg: String) {
-    Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
+    Toast.makeText(LocalContext.current, msg, Toast.LENGTH_SHORT).show()
 }
 
 actual val platformName: String = platformNameAndroid
